@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node .",
     "start-dev": "nodemon . -q",
+    "test": "jest --passWithNoTests",
     "prepare": "husky install"
   },
   "keywords": [],
@@ -13,5 +14,9 @@
   "license": "ISC",
   "devDependencies": {
     "husky": "^7.0.0"
+  },
+  "dependencies": {
+    "@types/jest": "^27.4.1",
+    "jest": "^27.5.1"
   }
 }
