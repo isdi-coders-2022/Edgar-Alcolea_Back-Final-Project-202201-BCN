@@ -1,5 +1,5 @@
 const chalk = require("chalk");
-const debug = require("debug");
+const debug = require("debug")("PK-spots:server");
 
 const initServer = (app, port) =>
   new Promise((resolve, reject) => {
@@ -11,4 +11,4 @@ const initServer = (app, port) =>
     server.on("error", (error) => reject(error));
   });
 
-module.export = initServer;
+module.exports = initServer;
