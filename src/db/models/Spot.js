@@ -31,4 +31,4 @@ const spotSchema = new Schema({
 
 const Spot = model("Spot", spotSchema, "spots");
 
-export default Spot;
+module.exports = Spot;
