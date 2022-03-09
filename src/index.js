@@ -1,11 +1,10 @@
 require("dotenv").config();
 const debug = require("debug")("PK-spots:root");
 const chalk = require("chalk");
-const express = require("express");
 const connectDB = require("./db/connectDB");
+const app = require("./server");
 const initServer = require("./server/initServer");
 
-const app = express();
 const port = process.env.PORT || 4000;
 const mongoUri = process.env.MONGO_CONNECT;
 
