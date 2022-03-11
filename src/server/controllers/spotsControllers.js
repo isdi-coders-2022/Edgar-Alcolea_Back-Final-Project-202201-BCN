@@ -9,4 +9,14 @@ const getSpots = async (req, res, next) => {
   }
 };
 
-module.exports = getSpots;
+const deleteSpot = async (req, res, next) => {
+  const spotId = req.params;
+  try {
+    const deletedSpot = await Spot.findByIdAndDelete(spotId);
+    res.json(deletedSpot);
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { getSpots, deleteSpot };

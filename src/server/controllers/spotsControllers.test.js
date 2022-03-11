@@ -1,5 +1,5 @@
 const Spot = require("../../db/models/Spot");
-const getSpots = require("./spotsControllers");
+const { getSpots } = require("./spotsControllers");
 
 describe("Given a getSpots controller", () => {
   describe("When it receives a response", () => {
