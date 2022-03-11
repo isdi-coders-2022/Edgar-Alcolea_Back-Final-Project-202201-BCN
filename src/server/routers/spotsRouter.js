@@ -1,8 +1,9 @@
 const express = require("express");
-const { getSpots } = require("../controllers/spotsControllers");
+const { getSpots, deleteSpot } = require("../controllers/spotsControllers");
 
 const router = express.Router();
 
 router.get("/", getSpots);
+router.delete("/delete/:spotID", deleteSpot);
 
 module.exports = router;
