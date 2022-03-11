@@ -60,3 +60,18 @@ describe("Given a /spots endpoint", () => {
     });
   });
 });
+
+describe("Given a /delete/2 endpoint", () => {
+  describe("When it receives a DELETE request", () => {
+    test("Then it should respond with 200 status code and id: 2", async () => {
+      const spots = await request(app).get("/spots");
+      const { id } = spots.body[0];
+
+      const { body } = await request(app)
+        .delete(`/spots/delete/${id}`)
+        .expect(200);
+
+      expect(body).toHaveProperty("id", id);
+    });
+  });
+});
