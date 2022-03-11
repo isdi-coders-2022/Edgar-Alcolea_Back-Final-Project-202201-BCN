@@ -1,5 +1,5 @@
 const express = require("express");
-const getSpots = require("../controllers/spotsControllers");
+const { getSpots } = require("../controllers/spotsControllers");
 
 const router = express.Router();
 
