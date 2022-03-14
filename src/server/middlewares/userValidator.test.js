@@ -1,5 +1,4 @@
 const { Joi } = require("express-validation");
-const { error } = require("./userValidator");
 const userValidator = require("./userValidator");
 
 describe("Given an userValidator schema", () => {
