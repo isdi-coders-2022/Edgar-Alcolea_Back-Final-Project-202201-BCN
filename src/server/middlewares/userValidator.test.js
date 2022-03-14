@@ -2,7 +2,7 @@ const { Joi } = require("express-validation");
 const userValidator = require("./userValidator");
 
 describe("Given an userValidator schema", () => {
-  describe("When it validates a valid user", () => {
+  describe("When it's used to validate a valid user", () => {
     test("Then it should return undefined", () => {
       const testUser = {
         userName: "testMan",
@@ -20,7 +20,7 @@ describe("Given an userValidator schema", () => {
     });
   });
 
-  describe("When it validates a user with wrong name", () => {
+  describe("When it's used to validate a user with wrong name", () => {
     test("Then it should throw an error", () => {
       const testUser = {
         userName: 123,
