@@ -14,8 +14,8 @@ const spotSchema = new Schema({
     minlength: 20,
     maxlength: 300,
   },
-  createdBy: { type: Schema.Types.ObjectId },
-  markedBy: { type: [Schema.Types.ObjectId] },
+  createdBy: { type: Schema.Types.ObjectId, ref: "User" },
+  markedBy: { type: [Schema.Types.ObjectId], ref: "User" },
   location: {
     type: String,
     minlength: 10,
