@@ -24,7 +24,6 @@ const userSchema = new Schema({
   city: {
     type: String,
   },
-
   image: {
     type: String,
     required: true,
