@@ -1,9 +1,24 @@
 const express = require("express");
-const { getSpots, deleteSpot } = require("../controllers/spotsControllers");
+const { validate } = require("express-validation");
+const multer = require("multer");
+const {
+  getSpots,
+  deleteSpot,
+  createSpot,
+} = require("../controllers/spotsControllers");
+const spotValidator = require("../middlewares/spotValidator");
+
+const upload = multer({ dest: "uploads" });
 
 const router = express.Router();
 
 router.get("/", getSpots);
 router.delete("/delete/:spotId", deleteSpot);
+router.post(
+  "/new",
+  upload.single("image"),
+  validate(spotValidator),
+  createSpot
+);
 
 module.exports = router;

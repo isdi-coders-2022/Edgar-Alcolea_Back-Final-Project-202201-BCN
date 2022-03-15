@@ -6,16 +6,13 @@ describe("Given an spotValidator schema", () => {
     test("Then it should return undefined", () => {
       const spot = {
         name: "Test Place",
-        marked: 10,
         description: "A place that doesn't really exist.",
-        createdBy: "Lauhus",
-        markedBy: ["Laulhus", "Joey"],
         location: "Barcelona, nope",
-        coordinates: [33.4125, -45.0326],
+        coordinates: "33.4125, -45.0326",
         image: "thisIsAnUrl",
       };
 
-      const validation = Joi.assert(spot, spotValidator);
+      const validation = Joi.assert(spot, spotValidator.body);
 
       expect(validation).toBe(undefined);
     });
