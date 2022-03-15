@@ -23,7 +23,8 @@ beforeEach(async () => {
         "Indoor facility with crazy props and themed spots, training programs and gym.",
       createdBy: "62274dd6fb4746a872d98b8d",
       location: "Next to L.A.X airport",
-      coordinates: [33.920548123347544, -118.33193817357487],
+      xCoordinate: "34.5457",
+      yCoordinate: "-2748324.324235",
       image: "testImg",
     },
     {
@@ -32,7 +33,8 @@ beforeEach(async () => {
       description: "A place that exists just for the purpose of testing.",
       createdBy: "62274dd6fb4746a872d98b8d",
       location: "The mind inside its creator",
-      coordinates: [0, 0],
+      xCoordinate: "34.5457",
+      yCoordinate: "-2748324.324235",
       image: "testImg",
     }
   );
@@ -61,7 +63,7 @@ describe("Given a /spots endpoint", () => {
   });
 });
 
-describe("Given a /delete/2 endpoint", () => {
+describe("Given a /spots/delete/2 endpoint", () => {
   describe("When it receives a DELETE request", () => {
     test("Then it should respond with 200 status code and id: 2", async () => {
       const spots = await request(app).get("/spots");
@@ -72,6 +74,47 @@ describe("Given a /delete/2 endpoint", () => {
         .expect(200);
 
       expect(body).toHaveProperty("id", id);
+    });
+  });
+});
+
+describe("Given a /spots/new endpoint", () => {
+  describe("When it receives a POST request", () => {
+    test("Then it should respond with 201 status code and the spot created", async () => {
+      const image = {
+        fieldname: "image",
+        originalname: "spotImage.jpeg",
+        encoding: "7bit",
+        mimetype: "image/jpeg",
+        destination: "uploads/",
+        filename: "20tf034d18fY882e662bc2fdf9a72a",
+        path: "uploads/20tf034d18fY882e662bc2fdf9a72a",
+        size: 7830,
+      };
+      const req = {
+        body: {
+          name: "Tempest Freerunning Academy",
+          description: "Awesome indoor facilities for all types of training.",
+          location: "Los Angeles",
+          xCoordinate: "33.9205125116643",
+          yCoordinate: "118.33194890241008",
+        },
+        file: image,
+      };
+      const { body } = await request(app)
+        .post(`/spots/new`)
+        .field("name", "Tempest Freerunning Academy")
+        .field(
+          "description",
+          "Awesome indoor facilities for all types of training."
+        )
+        .field("location", "Los Angeles")
+        .field("xCoordinate", "33.9205125116643")
+        .field("yCoordinate", "118.33194890241008")
+        .attach("image", "uploads/Sin título.png")
+        .expect(201);
+
+      expect(body).toHaveProperty("name");
     });
   });
 });
