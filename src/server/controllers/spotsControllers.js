@@ -1,5 +1,13 @@
 const { initializeApp } = require("firebase/app");
-const { getStorage, ref, uploadBytes } = require("firebase/storage");
+const {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+} = require("firebase/storage");
+const fs = require("fs");
+const path = require("path");
+const debug = require("debug")("PK-spots:server:controllers");
 const Spot = require("../../db/models/Spot");
 
 const firebaseConfig = {
@@ -44,9 +52,28 @@ const deleteSpot = async (req, res, next) => {
 
 const createSpot = async (req, res, next) => {
   try {
-    const createdSpot = await Spot.create(req.body);
     if (createdSpot) {
-      res.json(createdSpot);
+      const oldFileName = path.join("uploads", req.file.filename);
+      const newFileName = path.join("uploads", req.file.originalname);
+      fs.rename(oldFileName, newFileName, (error) => {
+        if (error) {
+          next(error);
+        }
+      });
+      fs.readFile(newFileName, async (error, file) => {
+        if (error) {
+          next(error);
+        } else {
+          uploadBytes(spotsRef, file);
+          debug("Uploaded spot image to cloud storage!");
+          const firebaseFileUrl = await getDownloadURL(spotsRef);
+          const createdSpot = await Spot.create({
+            ...req.body,
+            image: firebaseFileUrl,
+          });
+          res.status(201).json(createdSpot);
+        }
+      });
     } else {
       const error = new Error("Invalid data format");
       error.code = 400;
