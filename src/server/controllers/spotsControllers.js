@@ -65,7 +65,7 @@ const createSpot = async (req, res, next) =>
           resolve();
         } else {
           const spotRef = ref(storage, newFileName);
-          uploadBytes(spotRef, file);
+          await uploadBytes(spotRef, file);
           debug("Uploaded spot image to cloud storage!");
           const firebaseFileUrl = await getDownloadURL(spotRef);
           const createdSpot = await Spot.create({

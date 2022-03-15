@@ -21,8 +21,8 @@ router.get("/", getSpots);
 router.delete("/delete/:spotId", deleteSpot);
 router.post(
   "/new",
-  upload.single("image"),
   validate(spotValidator),
+  upload.single("image"),
   createSpot
 );
 

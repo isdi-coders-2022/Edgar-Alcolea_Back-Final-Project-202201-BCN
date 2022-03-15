@@ -11,18 +11,19 @@ const spotSchema = new Schema({
   },
   description: {
     type: String,
-    minlength: 20,
-    maxlength: 300,
   },
   createdBy: { type: Schema.Types.ObjectId, ref: "User" },
   markedBy: { type: [Schema.Types.ObjectId], ref: "User" },
   location: {
     type: String,
-    minlength: 10,
-    maxlength: 100,
   },
-  coordinates: {
-    type: [Schema.Types.Decimal128],
+  xCoordinate: {
+    type: String,
+    required: true,
+  },
+  yCoordinate: {
+    type: String,
+    required: true,
   },
   image: {
     type: String,
