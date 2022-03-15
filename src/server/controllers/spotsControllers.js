@@ -21,8 +21,6 @@ const firebaseConfig = {
 
 const firebaseApp = initializeApp(firebaseConfig);
 const storage = getStorage(firebaseApp);
-const storageRef = ref(storage);
-const spotsRef = ref(storageRef, "spots-images");
 
 const getSpots = async (req, res, next) => {
   try {
@@ -66,9 +64,10 @@ const createSpot = async (req, res, next) =>
           next(error);
           resolve();
         } else {
-          uploadBytes(spotsRef, file);
+          const spotRef = ref(storage, newFileName);
+          uploadBytes(spotRef, file);
           debug("Uploaded spot image to cloud storage!");
-          const firebaseFileUrl = await getDownloadURL(spotsRef);
+          const firebaseFileUrl = await getDownloadURL(spotRef);
           const createdSpot = await Spot.create({
             ...req.body,
             image: firebaseFileUrl,
