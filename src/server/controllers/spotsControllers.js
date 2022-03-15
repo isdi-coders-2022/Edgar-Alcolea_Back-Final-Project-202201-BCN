@@ -26,4 +26,20 @@ const deleteSpot = async (req, res, next) => {
   }
 };
 
-module.exports = { getSpots, deleteSpot };
+const createSpot = async (req, res, next) => {
+  try {
+    const createdSpot = await Spot.create(req.body);
+    if (createdSpot) {
+      res.json(createdSpot);
+    } else {
+      const error = new Error("Invalid data format");
+      error.code = 400;
+      next(error);
+    }
+  } catch (error) {
+    error.code = 400;
+    next(error);
+  }
+};
+
+module.exports = { getSpots, deleteSpot, createSpot };
