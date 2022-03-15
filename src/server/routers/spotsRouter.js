@@ -8,7 +8,12 @@ const {
 } = require("../controllers/spotsControllers");
 const spotValidator = require("../middlewares/spotValidator");
 
-const upload = multer({ dest: "uploads" });
+const upload = multer({
+  dest: "uploads",
+  limits: {
+    fileSize: 8000000,
+  },
+});
 
 const router = express.Router();
 
