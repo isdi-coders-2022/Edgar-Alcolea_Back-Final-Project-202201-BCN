@@ -113,3 +113,26 @@ describe("Given a deleteSpot controller", () => {
     });
   });
 });
+
+describe("Given a createRobot controller", () => {
+  describe("When it receives a request and a response", () => {
+    test("Then it should call the response json method with a new spot", () => {
+      const res = {
+        json: jest.fn(),
+      };
+      const req = {
+        body: {
+          name: "Tempest Freerunning Academy",
+          marked: 100,
+          description: "Awesome indoor facilities for all types of training.",
+          createdBy: "622f701d711b35a7cca16023",
+          markedBy: ["622f701d711b35a7cca16023", "622f701d711b35a7cca16024"],
+          location: "Los Angeles",
+          coordinates: [33.9205125116643, 118.33194890241008],
+          image:
+            "https://images.squarespace-cdn.com/content/v1/59b30729ccc5c5736a2325c1/1517258406485-RVEAFZDOHK6LYIW42PM3/DSC08963+%281%29.jpg?format=1000w",
+        },
+      };
+    });
+  });
+});
