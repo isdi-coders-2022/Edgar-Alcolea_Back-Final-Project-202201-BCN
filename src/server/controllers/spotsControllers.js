@@ -1,4 +1,20 @@
+const { initializeApp } = require("firebase/app");
+const { getStorage, ref, uploadBytes } = require("firebase/storage");
 const Spot = require("../../db/models/Spot");
+
+const firebaseConfig = {
+  apiKey: process.env.FIREBASE_KEY,
+  authDomain: "pk-spots-68866.firebaseapp.com",
+  projectId: "pk-spots-68866",
+  storageBucket: "gs://pk-spots-68866.appspot.com",
+  messagingSenderId: "74314595657",
+  appId: "1:74314595657:web:4cd3d9088f5f4d1ab7ee98",
+};
+
+const firebaseApp = initializeApp(firebaseConfig);
+const storage = getStorage(firebaseApp);
+const storageRef = ref(storage);
+const spotsRef = ref(storageRef, "spots-images");
 
 const getSpots = async (req, res, next) => {
   try {
