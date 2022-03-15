@@ -52,33 +52,27 @@ const deleteSpot = async (req, res, next) => {
 
 const createSpot = async (req, res, next) => {
   try {
-    if (createdSpot) {
-      const oldFileName = path.join("uploads", req.file.filename);
-      const newFileName = path.join("uploads", req.file.originalname);
-      fs.rename(oldFileName, newFileName, (error) => {
-        if (error) {
-          next(error);
-        }
-      });
-      fs.readFile(newFileName, async (error, file) => {
-        if (error) {
-          next(error);
-        } else {
-          uploadBytes(spotsRef, file);
-          debug("Uploaded spot image to cloud storage!");
-          const firebaseFileUrl = await getDownloadURL(spotsRef);
-          const createdSpot = await Spot.create({
-            ...req.body,
-            image: firebaseFileUrl,
-          });
-          res.status(201).json(createdSpot);
-        }
-      });
-    } else {
-      const error = new Error("Invalid data format");
-      error.code = 400;
-      next(error);
-    }
+    const oldFileName = path.join("uploads", req.file.filename);
+    const newFileName = path.join("uploads", req.file.originalname);
+    fs.rename(oldFileName, newFileName, (error) => {
+      if (error) {
+        next(error);
+      }
+    });
+    fs.readFile(newFileName, async (error, file) => {
+      if (error) {
+        next(error);
+      } else {
+        uploadBytes(spotsRef, file);
+        debug("Uploaded spot image to cloud storage!");
+        const firebaseFileUrl = await getDownloadURL(spotsRef);
+        const createdSpot = await Spot.create({
+          ...req.body,
+          image: firebaseFileUrl,
+        });
+        res.status(201).json(createdSpot);
+      }
+    });
   } catch (error) {
     error.code = 400;
     next(error);
