@@ -81,26 +81,6 @@ describe("Given a /spots/delete/2 endpoint", () => {
 describe("Given a /spots/new endpoint", () => {
   describe("When it receives a POST request", () => {
     test("Then it should respond with 201 status code and the spot created", async () => {
-      const image = {
-        fieldname: "image",
-        originalname: "spotImage.jpeg",
-        encoding: "7bit",
-        mimetype: "image/jpeg",
-        destination: "uploads/",
-        filename: "20tf034d18fY882e662bc2fdf9a72a",
-        path: "uploads/20tf034d18fY882e662bc2fdf9a72a",
-        size: 7830,
-      };
-      const req = {
-        body: {
-          name: "Tempest Freerunning Academy",
-          description: "Awesome indoor facilities for all types of training.",
-          location: "Los Angeles",
-          xCoordinate: "33.9205125116643",
-          yCoordinate: "118.33194890241008",
-        },
-        file: image,
-      };
       const { body } = await request(app)
         .post(`/spots/new`)
         .field("name", "Tempest Freerunning Academy")
