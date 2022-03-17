@@ -31,6 +31,12 @@ const getSpots = async (req, res, next) => {
   }
 };
 
+const getSpot = async (req, res) => {
+  const { id } = req.params;
+  const spot = await Spot.findById(id);
+  res.json(spot);
+};
+
 const deleteSpot = async (req, res, next) => {
   const { spotId } = req.params;
   try {
@@ -91,6 +97,7 @@ const createSpot = async (req, res, next) =>
     }
   });
 
+
 const updateSpot = async (req, res, next) =>
   new Promise((resolve) => {
     try {
@@ -147,4 +154,5 @@ const updateSpot = async (req, res, next) =>
     }
   });
 
-module.exports = { getSpots, deleteSpot, createSpot, updateSpot };
+module.exports = { getSpots,getSpot, deleteSpot, createSpot, updateSpot };
+

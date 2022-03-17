@@ -5,6 +5,8 @@ const {
   deleteSpot,
   createSpot,
   updateSpot,
+  getSpot,
+
 } = require("./spotsControllers");
 
 jest.mock("firebase/storage", () => ({
@@ -63,6 +65,38 @@ describe("Given a getSpots controller", () => {
       await getSpots(null, null, next);
 
       expect(next).toHaveBeenCalledWith(error);
+    });
+  });
+});
+
+describe("Given a getSpot controller", () => {
+  describe("When it receives a response and a request containing the id '7854f1c'", () => {
+    test("Then it should call the response json method with a spot", async () => {
+      const res = {
+        json: jest.fn(),
+      };
+      const req = {
+        params: {
+          id: "7854f1c",
+        },
+      };
+      const spot = {
+        id: "7854f1c",
+        name: "Test Place",
+        marked: 20,
+        description: "A place that exists just for the purpose of testing.",
+        createdBy: "testID",
+        location: "The mind",
+        coordinates: [0, 0],
+        image: "testImg",
+      };
+
+      Spot.findById = jest.fn().mockResolvedValue(spot);
+
+      await getSpot(req, res);
+
+      expect(Spot.find).toHaveBeenCalled();
+      expect(res.json).toHaveBeenCalledWith(spot);
     });
   });
 });
