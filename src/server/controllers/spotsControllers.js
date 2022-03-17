@@ -95,36 +95,44 @@ const updateSpot = async (req, res, next) =>
   new Promise((resolve) => {
     try {
       const { id } = req.params;
-      const oldFileName = path.join("uploads", req.file.filename);
-      const newFileName = path.join("uploads", req.file.originalname);
-      fs.rename(oldFileName, newFileName, (error) => {
-        if (error) {
-          next(error);
-          resolve();
-        } else {
-          fs.readFile(newFileName, async (err, file) => {
-            if (err) {
-              next(err);
-              resolve();
-            } else {
-              const spotRef = ref(storage, newFileName);
-              await uploadBytes(spotRef, file);
-              debug("Uploaded spot image to cloud storage!");
-              const firebaseFileUrl = await getDownloadURL(spotRef);
-              const updatedSpot = await Spot.findByIdAndUpdate(
-                id,
-                {
-                  ...req.body,
-                  image: firebaseFileUrl,
-                },
-                { new: true }
-              );
-              res.status(200).json(updatedSpot);
-              resolve();
-            }
-          });
-        }
-      });
+      const selectedSpot = Spot.findById(id);
+      if (selectedSpot) {
+        const oldFileName = path.join("uploads", req.file.filename);
+        const newFileName = path.join("uploads", req.file.originalname);
+        fs.rename(oldFileName, newFileName, (error) => {
+          if (error) {
+            next(error);
+            resolve();
+          } else {
+            fs.readFile(newFileName, async (err, file) => {
+              if (err) {
+                next(err);
+                resolve();
+              } else {
+                const spotRef = ref(storage, newFileName);
+                await uploadBytes(spotRef, file);
+                debug("Uploaded spot image to cloud storage!");
+                const firebaseFileUrl = await getDownloadURL(spotRef);
+
+                const updatedSpot = await Spot.findByIdAndUpdate(
+                  id,
+                  {
+                    ...req.body,
+                    image: firebaseFileUrl,
+                  },
+                  { new: true }
+                );
+                res.status(200).json(updatedSpot);
+                resolve();
+              }
+            });
+          }
+        });
+      } else {
+        const error = new Error("Spot not found");
+        error.code = 404;
+        next(error);
+      }
     } catch (error) {
       fs.unlink(path.join("uploads", req.file.filename), () => {
         error.code = 404;
