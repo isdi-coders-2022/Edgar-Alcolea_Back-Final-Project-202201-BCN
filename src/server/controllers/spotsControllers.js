@@ -57,23 +57,24 @@ const createSpot = async (req, res, next) =>
         if (error) {
           next(error);
           resolve();
-        }
-      });
-      fs.readFile(newFileName, async (error, file) => {
-        if (error) {
-          next(error);
-          resolve();
         } else {
-          const spotRef = ref(storage, newFileName);
-          await uploadBytes(spotRef, file);
-          debug("Uploaded spot image to cloud storage!");
-          const firebaseFileUrl = await getDownloadURL(spotRef);
-          const createdSpot = await Spot.create({
-            ...req.body,
-            image: firebaseFileUrl,
+          fs.readFile(newFileName, async (err, file) => {
+            if (err) {
+              next(err);
+              resolve();
+            } else {
+              const spotRef = ref(storage, newFileName);
+              await uploadBytes(spotRef, file);
+              debug("Uploaded spot image to cloud storage!");
+              const firebaseFileUrl = await getDownloadURL(spotRef);
+              const createdSpot = await Spot.create({
+                ...req.body,
+                image: firebaseFileUrl,
+              });
+              res.status(201).json(createdSpot);
+              resolve();
+            }
           });
-          res.status(201).json(createdSpot);
-          resolve();
         }
       });
     } catch (error) {

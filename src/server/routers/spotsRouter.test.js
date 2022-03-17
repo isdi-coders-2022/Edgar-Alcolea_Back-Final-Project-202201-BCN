@@ -1,10 +1,10 @@
+require("dotenv").config();
 const { MongoMemoryServer } = require("mongodb-memory-server");
 const { default: mongoose } = require("mongoose");
 const request = require("supertest");
 const connectDB = require("../../db/connectDB");
 const Spot = require("../../db/models/Spot");
 const app = require("../index");
-require("dotenv").config();
 
 let mongoDB;
 
