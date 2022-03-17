@@ -111,10 +111,14 @@ const updateSpot = async (req, res, next) =>
               await uploadBytes(spotRef, file);
               debug("Uploaded spot image to cloud storage!");
               const firebaseFileUrl = await getDownloadURL(spotRef);
-              const updatedSpot = await Spot.findByIdAndUpdate(id, {
-                ...req.body,
-                image: firebaseFileUrl,
-              });
+              const updatedSpot = await Spot.findByIdAndUpdate(
+                id,
+                {
+                  ...req.body,
+                  image: firebaseFileUrl,
+                },
+                { new: true }
+              );
               res.status(200).json(updatedSpot);
               resolve();
             }

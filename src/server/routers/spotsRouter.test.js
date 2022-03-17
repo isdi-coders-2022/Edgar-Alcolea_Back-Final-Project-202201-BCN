@@ -98,3 +98,26 @@ describe("Given a /spots/new endpoint", () => {
     });
   });
 });
+
+describe("Given a /spots/:id endpoint", () => {
+  describe("When it receives a PUT request and a spot in the request", () => {
+    test("Then it should respond with 200 status code and the updated spot", async () => {
+      const spots = await request(app).get("/spots");
+      const { id } = spots.body[0];
+      const expectedName = "Updated Spot";
+      const { body } = await request(app)
+        .put(`/spots/${id}`)
+        .field("name", "Updated Spot")
+        .field(
+          "description",
+          "Awesome indoor facilities for all types of training."
+        )
+        .field("location", "Los Angeles")
+        .field("xCoordinate", "33.9205125116643")
+        .field("yCoordinate", "118.33194890241008")
+        .attach("image", "uploads/Sin título.png");
+
+      expect(body).toHaveProperty("name", expectedName);
+    });
+  });
+});

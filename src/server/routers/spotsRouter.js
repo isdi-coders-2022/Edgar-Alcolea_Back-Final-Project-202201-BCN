@@ -26,5 +26,5 @@ router.post(
   upload.single("image"),
   createSpot
 );
-router.put("/:id", updateSpot);
+router.put("/:id", validate(spotValidator), upload.single("image"), updateSpot);
 module.exports = router;
