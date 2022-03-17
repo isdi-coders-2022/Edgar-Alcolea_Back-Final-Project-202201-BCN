@@ -4,7 +4,9 @@ const {
   getSpots,
   deleteSpot,
   createSpot,
+  updateSpot,
   getSpot,
+
 } = require("./spotsControllers");
 
 jest.mock("firebase/storage", () => ({
@@ -346,6 +348,178 @@ describe("Given a createSpot controller", () => {
       await createSpot(req, res, next);
 
       expect(next).toHaveBeenCalled();
+    });
+  });
+});
+
+describe("Given an updateSpot controller", () => {
+  describe("When it receives a request with data and a file", () => {
+    test("Then it should call the response json method with the updated spot", async () => {
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+
+      const image = {
+        fieldname: "image",
+        originalname: "spotImage.jpeg",
+        encoding: "7bit",
+        mimetype: "image/jpeg",
+        destination: "uploads/",
+        filename: "20tf034d18fY882e662bc2fdf9a72a",
+        path: "uploads/20tf034d18fY882e662bc2fdf9a72a",
+        size: 7830,
+      };
+      const req = {
+        body: {
+          name: "Tempest Freerunning Academy",
+          marked: 100,
+          description: "Awesome indoor facilities for all types of training.",
+          createdBy: "622f701d711b35a7cca16023",
+          markedBy: ["622f701d711b35a7cca16023", "622f701d711b35a7cca16024"],
+          location: "Los Angeles",
+          coordinates: [33.9205125116643, 118.33194890241008],
+        },
+        file: image,
+        params: {
+          id: "623357ec7bfc7c9d599034be",
+        },
+      };
+      const newSpot = {
+        id: 123456,
+        name: "Tempest Freerunning Academy",
+        image: "imageUrl",
+      };
+      const next = jest.fn();
+
+      Spot.findById = jest.fn().mockResolvedValue(newSpot);
+      Spot.findByIdAndUpdate = jest.fn().mockResolvedValue(newSpot);
+      jest
+        .spyOn(fs, "rename")
+        .mockImplementation((oldpath, newpath, callback) => {
+          callback();
+        });
+      jest.spyOn(fs, "readFile").mockImplementation((file, callback) => {
+        callback(null, image);
+      });
+
+      await updateSpot(req, res, next);
+
+      expect(res.json).toHaveBeenCalledWith(newSpot);
+    });
+  });
+
+  describe("When it receives a request with spot data and an image and the renaming fails", () => {
+    test("Then it should call next with an error", async () => {
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+
+      const image = {
+        fieldname: "image",
+        originalname: "spotImage.jpeg",
+        encoding: "7bit",
+        mimetype: "image/jpeg",
+        destination: "uploads/",
+        filename: "20tf034d18fY882e662bc2fdf9a72a",
+        path: "uploads/20tf034d18fY882e662bc2fdf9a72a",
+        size: 7830,
+      };
+      const req = {
+        body: {
+          name: "Tempest Freerunning Academy",
+          marked: 100,
+          description: "Awesome indoor facilities for all types of training.",
+          createdBy: "622f701d711b35a7cca16023",
+          markedBy: ["622f701d711b35a7cca16023", "622f701d711b35a7cca16024"],
+          location: "Los Angeles",
+          coordinates: [33.9205125116643, 118.33194890241008],
+        },
+        file: image,
+        params: {
+          id: "623357ec7bfc7c9d599034be",
+        },
+      };
+      const newSpot = {
+        id: 123456,
+        name: "Tempest Freerunning Academy",
+        image: "imageUrl",
+      };
+      const error = "Error renaming the file";
+      const next = jest.fn();
+
+      Spot.findById = jest.fn().mockResolvedValue(newSpot);
+      Spot.findByIdAndUpdate = jest.fn().mockResolvedValue(newSpot);
+      jest
+        .spyOn(fs, "rename")
+        .mockImplementation((oldpath, newpath, callback) => {
+          callback(error);
+        });
+      jest.spyOn(fs, "readFile").mockImplementation((file, callback) => {
+        callback(null, image);
+      });
+
+      await updateSpot(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(error);
+    });
+  });
+
+  describe("When it receives a request with spot data and no image", () => {
+    test("Then it should call next with an error", async () => {
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+
+      const image = {
+        fieldname: "image",
+        originalname: "spotImage.jpeg",
+        encoding: "7bit",
+        mimetype: "image/jpeg",
+        destination: "uploads/",
+        filename: "20tf034d18fY882e662bc2fdf9a72a",
+        path: "uploads/20tf034d18fY882e662bc2fdf9a72a",
+        size: 7830,
+      };
+      const req = {
+        body: {
+          name: "Tempest Freerunning Academy",
+          marked: 100,
+          description: "Awesome indoor facilities for all types of training.",
+          createdBy: "622f701d711b35a7cca16023",
+          markedBy: ["622f701d711b35a7cca16023", "622f701d711b35a7cca16024"],
+          location: "Los Angeles",
+          coordinates: [33.9205125116643, 118.33194890241008],
+        },
+        file: image,
+        params: {
+          id: "623357ec7bfc7c9d599034be",
+        },
+      };
+      const newSpot = {
+        id: 123456,
+        name: "Tempest Freerunning Academy",
+        image: "imageUrl",
+      };
+      const error = "Error reading the file";
+      const next = jest.fn();
+
+      Spot.findById = jest.fn().mockResolvedValue(newSpot);
+      Spot.findByIdAndUpdate = jest.fn().mockResolvedValue(newSpot);
+      jest
+        .spyOn(fs, "rename")
+        .mockImplementation((oldpath, newpath, callback) => {
+          callback();
+        });
+      jest.spyOn(fs, "readFile").mockImplementation((file, callback) => {
+        callback(error, image);
+      });
+
+      await updateSpot(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(error);
     });
   });
 });
