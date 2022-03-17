@@ -1,0 +1,159 @@
+{
+  "info": {
+    "_postman_id": "3e627f77-59c0-4c24-9b15-3e4999232b35",
+    "name": "pk-spots-edgar-alcolea",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get Spots",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{prodUrl}}spots",
+          "host": ["{{prodUrl}}spots"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Spot",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{prodUrl}}spots/delete/622b3a1ca0a6b78a0ae6a8d9",
+          "host": ["{{prodUrl}}spots"],
+          "path": ["delete", "622b3a1ca0a6b78a0ae6a8d9"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Request",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "name",
+              "value": "Test Spot2",
+              "type": "text"
+            },
+            {
+              "key": "description",
+              "value": "Esto es un test para ver si se crean spots",
+              "type": "text"
+            },
+            {
+              "key": "location",
+              "value": "Test City",
+              "type": "text"
+            },
+            {
+              "key": "yCoordinate",
+              "value": "-17.467421",
+              "type": "text"
+            },
+            {
+              "key": "xCoordinate",
+              "value": "73.585939",
+              "type": "text"
+            },
+            {
+              "key": "image",
+              "type": "file",
+              "src": "/C:/Users/Laulhus/Pictures/shadow-of-the-colossus-4k-s8-1920x1080.jpg"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{prodUrl}}spots/new",
+          "host": ["{{prodUrl}}spots"],
+          "path": ["new"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Spot",
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "name",
+              "value": "Updated",
+              "type": "text"
+            },
+            {
+              "key": "description",
+              "value": "Esto es un test para ver si se crean spots",
+              "type": "text"
+            },
+            {
+              "key": "location",
+              "value": "Test City",
+              "type": "text"
+            },
+            {
+              "key": "yCoordinate",
+              "value": "-17.467421",
+              "type": "text"
+            },
+            {
+              "key": "xCoordinate",
+              "value": "73.585939",
+              "type": "text"
+            },
+            {
+              "key": "image",
+              "type": "file",
+              "src": "/C:/Users/Laulhus/Pictures/97bad88c884f4b7d6c334eb204cfeda1.jpg"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{prodUrl}}spots/:id",
+          "host": ["{{prodUrl}}spots"],
+          "path": [":id"],
+          "variable": [
+            {
+              "key": "id",
+              "value": null
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "prodUrl",
+      "value": "https://edgar-alcolea-back-final-project-202201.onrender.com/",
+      "type": "string"
+    }
+  ]
+}
