@@ -5,6 +5,7 @@ const {
   getSpots,
   deleteSpot,
   createSpot,
+  updateSpot,
 } = require("../controllers/spotsControllers");
 const spotValidator = require("../middlewares/spotValidator");
 
@@ -25,5 +26,5 @@ router.post(
   upload.single("image"),
   createSpot
 );
-
+router.put("/:id", updateSpot);
 module.exports = router;
