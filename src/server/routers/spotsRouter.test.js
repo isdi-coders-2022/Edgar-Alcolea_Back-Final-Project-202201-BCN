@@ -63,6 +63,20 @@ describe("Given a /spots endpoint", () => {
   });
 });
 
+describe("Given a /spot/:id endpoint", () => {
+  describe("When it receives a GET request", () => {
+    test("Then it should respond with 200 status code and the corresponding spot", async () => {
+      const spots = await request(app).get("/spots");
+      const { id } = spots.body[0];
+      const expectedName = "Tempest Freerunning Academy";
+
+      const { body } = await request(app).get(`/spots/${id}`).expect(200);
+
+      expect(body).toHaveProperty("name", expectedName);
+    });
+  });
+});
+
 describe("Given a /spots/delete/2 endpoint", () => {
   describe("When it receives a DELETE request", () => {
     test("Then it should respond with 200 status code and id: 2", async () => {
