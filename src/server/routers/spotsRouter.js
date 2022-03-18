@@ -16,15 +16,21 @@ const upload = multer({
   },
 });
 
-const router = express.Router();
+const spotsRouter = express.Router();
 
-router.get("/", getSpots);
-router.delete("/delete/:spotId", deleteSpot);
-router.post(
+spotsRouter.get("/", getSpots);
+spotsRouter.delete("/delete/:spotId", deleteSpot);
+spotsRouter.post(
   "/new",
   validate(spotValidator),
   upload.single("image"),
   createSpot
 );
-router.put("/:id", validate(spotValidator), upload.single("image"), updateSpot);
-module.exports = router;
+spotsRouter.put(
+  "/:id",
+  validate(spotValidator),
+  upload.single("image"),
+  updateSpot
+);
+
+module.exports = spotsRouter;

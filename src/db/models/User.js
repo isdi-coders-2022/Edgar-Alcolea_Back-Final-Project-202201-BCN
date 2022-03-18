@@ -18,15 +18,12 @@ const userSchema = new Schema({
   },
   bio: {
     type: String,
-    minlength: 20,
-    maxlength: 300,
   },
   city: {
     type: String,
   },
   image: {
     type: String,
-    required: true,
   },
   createdSpots: {
     type: [Schema.Types.ObjectId],

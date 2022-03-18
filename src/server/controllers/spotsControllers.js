@@ -155,4 +155,11 @@ const updateSpot = async (req, res, next) =>
     }
   });
 
-module.exports = { getSpots, getSpot, deleteSpot, createSpot, updateSpot };
+module.exports = {
+  getSpots,
+  getSpot,
+  deleteSpot,
+  createSpot,
+  updateSpot,
+  storage,
+};
