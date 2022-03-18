@@ -5,16 +5,16 @@ describe("Given an userValidator schema", () => {
   describe("When it's used to validate a valid user", () => {
     test("Then it should return undefined", () => {
       const testUser = {
-        userName: "testMan",
+        username: "testMan",
         password: "testPass",
         name: "Test",
-        age: 29,
+        age: "29",
         bio: "I was born fot he solely purpose of being tested.",
         city: "Testcity",
         image: "thisIsAUrl",
       };
 
-      const validation = Joi.assert(testUser, userValidator);
+      const validation = Joi.assert(testUser, userValidator.body);
 
       expect(validation).toBe(undefined);
     });
