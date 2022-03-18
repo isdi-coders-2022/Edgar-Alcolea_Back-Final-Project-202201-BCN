@@ -84,19 +84,20 @@ const createSpot = async (req, res, next) =>
         }
       });
     } catch (error) {
-      fs.unlink(path.join("uploads", req.file.filename), () => {
-        error.code = 404;
-        error.message = "Error, local file not found";
-        next(error);
-        resolve();
-      });
-      error.message = "Error, couldn't create the spot";
+      if (req.file) {
+        fs.unlink(path.join("uploads", req.file.filename), () => {
+          error.code = 404;
+          error.message = "Error, local file not found";
+          next(error);
+          resolve();
+        });
+      }
+      error.message = "Error, image not found";
       error.code = 400;
       next(error);
       resolve();
     }
   });
-
 
 const updateSpot = async (req, res, next) =>
   new Promise((resolve) => {
@@ -154,5 +155,4 @@ const updateSpot = async (req, res, next) =>
     }
   });
 
-module.exports = { getSpots,getSpot, deleteSpot, createSpot, updateSpot };
-
+module.exports = { getSpots, getSpot, deleteSpot, createSpot, updateSpot };
