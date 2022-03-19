@@ -29,6 +29,10 @@ const userSchema = new Schema({
     ref: "Spot",
     default: [],
   },
+  admin: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const User = model("User", userSchema, "users");
