@@ -25,6 +25,7 @@ const userLogin = async (req, res, next) => {
         username: user.username,
         id: user.id,
         image: user.image,
+        admin: user.admin,
       };
       const token = jwt.sign(UserData, process.env.JWT_SECRET);
       res.json({ token });
