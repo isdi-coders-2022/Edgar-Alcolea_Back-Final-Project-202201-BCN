@@ -6,7 +6,6 @@ const {
   createSpot,
   updateSpot,
   getSpot,
-
 } = require("./spotsControllers");
 
 jest.mock("firebase/storage", () => ({
@@ -15,6 +14,9 @@ jest.mock("firebase/storage", () => ({
   getDownloadURL: () => "imageUrl",
   ref: () => {},
 }));
+
+jest.spyOn(Spot, "find").mockReturnThis();
+const mockSpotPopulate = jest.spyOn(Spot, "populate");
 
 describe("Given a getSpots controller", () => {
   describe("When it receives a response", () => {
@@ -45,11 +47,12 @@ describe("Given a getSpots controller", () => {
       const res = {
         json: jest.fn(),
       };
-      Spot.find = jest.fn().mockResolvedValue(spots);
+
+      mockSpotPopulate.mockImplementation(() => Promise.resolve(spots));
 
       await getSpots(null, res, null);
 
-      expect(res.json).toHaveBeenCalled();
+      expect(res.json).toHaveBeenCalledWith(spots);
     });
   });
 
@@ -60,7 +63,8 @@ describe("Given a getSpots controller", () => {
         message: "No spots found",
       };
       const next = jest.fn();
-      Spot.find = jest.fn().mockRejectedValue(error);
+
+      mockSpotPopulate.mockImplementation(() => Promise.reject(error));
 
       await getSpots(null, null, next);
 
@@ -95,7 +99,6 @@ describe("Given a getSpot controller", () => {
 
       await getSpot(req, res);
 
-      expect(Spot.find).toHaveBeenCalled();
       expect(res.json).toHaveBeenCalledWith(spot);
     });
   });
