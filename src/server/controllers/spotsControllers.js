@@ -24,7 +24,7 @@ const storage = getStorage(firebaseApp);
 
 const getSpots = async (req, res, next) => {
   try {
-    const spots = await Spot.find();
+    const spots = await Spot.find().populate("createdBy", "username");
     res.json(spots);
   } catch (error) {
     next(error);
