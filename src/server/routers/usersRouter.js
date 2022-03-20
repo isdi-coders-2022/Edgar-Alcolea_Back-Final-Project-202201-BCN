@@ -1,7 +1,11 @@
 const express = require("express");
 const { validate } = require("express-validation");
 const multer = require("multer");
-const { userLogin, userRegister } = require("../controllers/usersControllers");
+const {
+  userLogin,
+  userRegister,
+  getUser,
+} = require("../controllers/usersControllers");
 const userValidator = require("../middlewares/userValidator");
 
 const upload = multer({
@@ -20,4 +24,5 @@ usersRouter.post(
   upload.single("image"),
   userRegister
 );
+usersRouter.get("/:id", getUser);
 module.exports = usersRouter;

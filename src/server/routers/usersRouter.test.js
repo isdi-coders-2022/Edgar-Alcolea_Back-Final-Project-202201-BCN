@@ -15,6 +15,7 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await User.create({
+    _id: "623713460e6ef3e645cbccf5",
     username: "Testman",
     password: "testpass",
     age: "99",
@@ -48,6 +49,18 @@ describe("Given a /users/register endpoint", () => {
         .expect(201);
 
       expect(body).toHaveProperty("name");
+    });
+  });
+});
+
+describe("Given a /users/623713460e6ef3e645cbccf5 endpoint", () => {
+  describe("When it receives a request with params: 623713460e6ef3e645cbccf5", () => {
+    test("Then it should call response json method with the user with id 123", async () => {
+      const { body } = await request(app)
+        .get("/users/623713460e6ef3e645cbccf5")
+        .expect(200);
+
+      expect(body).toHaveProperty("username");
     });
   });
 });
