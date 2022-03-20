@@ -6,6 +6,7 @@ const {
   deleteSpot,
   createSpot,
   updateSpot,
+  getSpot,
 } = require("../controllers/spotsControllers");
 const spotValidator = require("../middlewares/spotValidator");
 
@@ -19,6 +20,7 @@ const upload = multer({
 const spotsRouter = express.Router();
 
 spotsRouter.get("/", getSpots);
+spotsRouter.get("/:id", getSpot);
 spotsRouter.delete("/delete/:spotId", deleteSpot);
 spotsRouter.post(
   "/new",
