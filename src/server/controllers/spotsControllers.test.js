@@ -192,6 +192,7 @@ describe("Given a createSpot controller", () => {
         city: "Testtown",
         image: "testImg",
         createdSpots: [],
+        save: jest.fn(),
       };
       const req = {
         body: {
@@ -212,6 +213,7 @@ describe("Given a createSpot controller", () => {
       };
       const next = jest.fn();
       User.findById = jest.fn().mockResolvedValue(user);
+
       Spot.create = jest.fn().mockResolvedValue(newSpot);
       jest
         .spyOn(fs, "rename")
