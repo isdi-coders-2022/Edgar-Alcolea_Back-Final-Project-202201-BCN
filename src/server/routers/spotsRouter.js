@@ -8,6 +8,7 @@ const {
   updateSpot,
   getSpot,
 } = require("../controllers/spotsControllers");
+const { getUserSpots } = require("../controllers/usersControllers");
 const auth = require("../middlewares/auth");
 const spotValidator = require("../middlewares/spotValidator");
 
@@ -22,6 +23,7 @@ const spotsRouter = express.Router();
 
 spotsRouter.get("/", getSpots);
 spotsRouter.get("/:id", getSpot);
+spotsRouter.get("/created", getUserSpots);
 spotsRouter.delete("/delete/:spotId", auth, deleteSpot);
 spotsRouter.post(
   "/new",

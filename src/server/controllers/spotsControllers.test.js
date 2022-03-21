@@ -1,5 +1,6 @@
 const fs = require("fs");
 const Spot = require("../../db/models/Spot");
+const User = require("../../db/models/User");
 const {
   getSpots,
   deleteSpot,
@@ -181,6 +182,17 @@ describe("Given a createSpot controller", () => {
         path: "uploads/20tf034d18fY882e662bc2fdf9a72a",
         size: 7830,
       };
+      const user = {
+        id: "7854f1c",
+        name: "Testio Coolio",
+        username: "Testman",
+        password: "testpass",
+        age: 99,
+        bio: "A place that exists just for the purpose of testing.",
+        city: "Testtown",
+        image: "testImg",
+        createdSpots: [],
+      };
       const req = {
         body: {
           name: "Tempest Freerunning Academy",
@@ -199,7 +211,7 @@ describe("Given a createSpot controller", () => {
         image: "imageUrl",
       };
       const next = jest.fn();
-
+      User.findById = jest.fn().mockResolvedValue(user);
       Spot.create = jest.fn().mockResolvedValue(newSpot);
       jest
         .spyOn(fs, "rename")

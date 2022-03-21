@@ -4,6 +4,7 @@ const { default: mongoose } = require("mongoose");
 const request = require("supertest");
 const connectDB = require("../../db/connectDB");
 const Spot = require("../../db/models/Spot");
+const User = require("../../db/models/User");
 const app = require("../index");
 
 let mongoDB;
@@ -86,6 +87,18 @@ describe("Given a /spots/new endpoint", () => {
     test("Then it should respond with 201 status code and the spot created", async () => {
       const token =
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkxhdWxodXMiLCJpZCI6IjYyMzQ3ZDZjYjVlOGZhMDQxZjdjMWE0NiIsImltYWdlIjoiaHR0cHM6Ly9maXJlYmFzZXN0b3JhZ2UuZ29vZ2xlYXBpcy5jb20vdjAvYi9way1zcG90cy02ODg2Ni5hcHBzcG90LmNvbS9vL3VwbG9hZHMlNUNmb3RvZWQuanBnP2FsdD1tZWRpYSZ0b2tlbj04NzhjMTU2MS1jMWY3LTRmNWEtYTM1NC00OTQ3NTUzZTBkZWYiLCJhZG1pbiI6dHJ1ZSwiaWF0IjoxNjQ3ODU0MjU3fQ.QCmDUyMnZztfuhqn4OxZvpdUzlZUppZrhS6ofgVQrzM";
+      const user = {
+        id: "7854f1c",
+        name: "Testio Coolio",
+        username: "Testman",
+        password: "testpass",
+        age: 99,
+        bio: "A place that exists just for the purpose of testing.",
+        city: "Testtown",
+        image: "testImg",
+        createdSpots: [],
+      };
+      User.findById = jest.fn().mockResolvedValue(user);
       const { body } = await request(app)
         .post(`/spots/new`)
         .field("name", "Tempest Freerunning Academy")
