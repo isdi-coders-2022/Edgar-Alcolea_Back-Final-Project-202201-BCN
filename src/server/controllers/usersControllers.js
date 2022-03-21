@@ -93,14 +93,8 @@ const userRegister = async (req, res, next) => {
 
 const getUser = async (req, res) => {
   const { id } = req.params;
-  const user = await User.findById(id);
+  const user = await User.findById(id).populate("createdSpots");
   res.json(user);
 };
 
-const getUserSpots = async (req, res) => {
-  const { id } = req.userId;
-  const userSpots = await User.findById(id).populate("createdSpots");
-  res.json(userSpots);
-};
-
-module.exports = { userLogin, userRegister, getUser, getUserSpots };
+module.exports = { userLogin, userRegister, getUser };

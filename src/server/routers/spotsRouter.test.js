@@ -49,7 +49,6 @@ afterAll(async () => {
   await mongoose.connection.close();
   await mongoDB.stop();
 });
-
 describe("Given a /spots endpoint", () => {
   describe("When it receives a GET request", () => {
     test("Then it should respond with 200 status code and an array of Spots", async () => {
@@ -97,7 +96,9 @@ describe("Given a /spots/new endpoint", () => {
         city: "Testtown",
         image: "testImg",
         createdSpots: [],
+        save: jest.fn(),
       };
+
       User.findById = jest.fn().mockResolvedValue(user);
       const { body } = await request(app)
         .post(`/spots/new`)
