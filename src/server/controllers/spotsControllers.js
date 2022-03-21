@@ -80,6 +80,7 @@ const createSpot = async (req, res, next) =>
               });
               const creator = await User.findById(req.userId);
               creator.createdSpots.push(createdSpot);
+              await creator.save();
               res.status(201).json(createdSpot);
               resolve();
             }

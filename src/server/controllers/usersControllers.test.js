@@ -1,6 +1,8 @@
 const User = require("../../db/models/User");
 const { getUser } = require("./usersControllers");
 
+const mockUserPopulate = jest.spyOn(User, "populate");
+
 describe("Given a getSpot controller", () => {
   describe("When it receives a response and a request containing the id '7854f1c'", () => {
     test("Then it should call the response json method with a spot", async () => {
@@ -9,11 +11,11 @@ describe("Given a getSpot controller", () => {
       };
       const req = {
         params: {
-          id: "7854f1c",
+          id: "6235f7a6029d09413cc89581",
         },
       };
       const user = {
-        id: "7854f1c",
+        id: "6235f7a6029d09413cc89581",
         name: "Testio Coolio",
         username: "Testman",
         password: "testpass",
@@ -22,8 +24,8 @@ describe("Given a getSpot controller", () => {
         city: "Testtown",
         image: "testImg",
       };
-
-      User.findById = jest.fn().mockResolvedValue(user);
+      User.findById = jest.fn().mockReturnThis();
+      mockUserPopulate.mockImplementation(() => Promise.resolve(user));
 
       await getUser(req, res);
 
