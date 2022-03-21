@@ -97,4 +97,10 @@ const getUser = async (req, res) => {
   res.json(user);
 };
 
-module.exports = { userLogin, userRegister, getUser };
+const getUserSpots = async (req, res) => {
+  const { id } = req.userId;
+  const userSpots = await User.findById(id).populate("createdSpots");
+  res.json(userSpots);
+};
+
+module.exports = { userLogin, userRegister, getUser, getUserSpots };
