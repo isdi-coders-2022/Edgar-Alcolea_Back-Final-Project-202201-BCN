@@ -9,6 +9,7 @@ const fs = require("fs");
 const path = require("path");
 const debug = require("debug")("PK-spots:server:controllers");
 const Spot = require("../../db/models/Spot");
+const User = require("../../db/models/User");
 
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_KEY,
@@ -77,6 +78,8 @@ const createSpot = async (req, res, next) =>
                 ...req.body,
                 image: firebaseFileUrl,
               });
+              const creator = await User.findById(req.userId);
+              creator.createdSpots.push(createdSpot);
               res.status(201).json(createdSpot);
               resolve();
             }
