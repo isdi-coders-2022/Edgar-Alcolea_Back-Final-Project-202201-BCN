@@ -18,6 +18,19 @@
       "response": []
     },
     {
+      "name": "Get Spot",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{prodUrl}}spots/6235cdb32aa433fde158be71",
+          "host": ["{{prodUrl}}spots"],
+          "path": ["6235cdb32aa433fde158be71"]
+        }
+      },
+      "response": []
+    },
+    {
       "name": "Delete Spot",
       "request": {
         "method": "DELETE",
@@ -31,7 +44,7 @@
       "response": []
     },
     {
-      "name": "Create Request",
+      "name": "Create Spot",
       "request": {
         "method": "POST",
         "header": [],
@@ -126,6 +139,101 @@
             {
               "key": "id",
               "value": null
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Register User",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "username",
+              "value": "Laulhus",
+              "type": "text"
+            },
+            {
+              "key": "password",
+              "value": "creator",
+              "type": "text"
+            },
+            {
+              "key": "name",
+              "value": "Edgar",
+              "type": "text"
+            },
+            {
+              "key": "age",
+              "value": "29",
+              "type": "text"
+            },
+            {
+              "key": "bio",
+              "value": "Hi everyone! I have been training Parkour since I was 16 years old, after travelling the world I noticed our community was lacking a place to gather all those cool spots we find in every city. I decided to create this app to fill that purpose and help share those hidden treasures and keep us connected.",
+              "type": "text"
+            },
+            {
+              "key": "city",
+              "value": "Barcelona",
+              "type": "text"
+            },
+            {
+              "key": "image",
+              "type": "file",
+              "src": "/D:/Edición/fotoed.jpg"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{prodUrl}}users/register",
+          "host": ["{{prodUrl}}users"],
+          "path": ["register"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login User",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"username\":\"Laulhus\",\r\n    \"password\":\"creator\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{prodUrl}}users/login",
+          "host": ["{{prodUrl}}users"],
+          "path": ["login"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get User",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{prodUrl}}users/6235f7a6029d09413cc89581",
+          "host": ["{{prodUrl}}users"],
+          "path": ["6235f7a6029d09413cc89581"],
+          "query": [
+            {
+              "key": "id",
+              "value": "6235fd21029d09413cc895c5",
+              "disabled": true
             }
           ]
         }
