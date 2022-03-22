@@ -82,11 +82,11 @@ describe("Given a getSpot controller", () => {
       };
       const req = {
         params: {
-          id: "7854f1c",
+          id: "62347d6cb5e8fa041f7c1a46",
         },
       };
       const spot = {
-        id: "7854f1c",
+        id: "62347d6cb5e8fa041f7c1a46",
         name: "Test Place",
         marked: 20,
         description: "A place that exists just for the purpose of testing.",
@@ -96,7 +96,8 @@ describe("Given a getSpot controller", () => {
         image: "testImg",
       };
 
-      Spot.findById = jest.fn().mockResolvedValue(spot);
+      Spot.findById = jest.fn().mockReturnThis();
+      Spot.populate = jest.fn().mockResolvedValue(spot);
 
       await getSpot(req, res);
 
