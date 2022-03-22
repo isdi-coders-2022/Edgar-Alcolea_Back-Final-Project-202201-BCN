@@ -1,4 +1,4 @@
-const fs = require("fs");
+const fs = require("fs/promises");
 const Spot = require("../../db/models/Spot");
 const User = require("../../db/models/User");
 const {
@@ -16,8 +16,10 @@ jest.mock("firebase/storage", () => ({
   ref: () => {},
 }));
 
+jest.spyOn(fs, "rename").mockResolvedValue(undefined);
 jest.spyOn(Spot, "find").mockReturnThis();
 const mockSpotPopulate = jest.spyOn(Spot, "populate");
+const mockFsReadFile = jest.spyOn(fs, "readFile");
 
 describe("Given a getSpots controller", () => {
   describe("When it receives a response", () => {
@@ -214,63 +216,13 @@ describe("Given a createSpot controller", () => {
       };
       const next = jest.fn();
       User.findById = jest.fn().mockResolvedValue(user);
-
       Spot.create = jest.fn().mockResolvedValue(newSpot);
-      jest
-        .spyOn(fs, "rename")
-        .mockImplementation((oldpath, newpath, callback) => {
-          callback();
-        });
-      jest.spyOn(fs, "readFile").mockImplementation((file, callback) => {
-        callback(null, image);
-      });
+
+      mockFsReadFile.mockResolvedValue({});
 
       await createSpot(req, res, next);
 
       expect(res.json).toHaveBeenCalledWith(newSpot);
-    });
-  });
-
-  describe("When it receives a request with spot data and an image and the renaming fails", () => {
-    test("Then it should call next with an error", async () => {
-      const res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
-      const image = {
-        fieldname: "image",
-        originalname: "spotImage.jpeg",
-        encoding: "7bit",
-        mimetype: "image/jpeg",
-        destination: "uploads/",
-        filename: "20tf034d18fY882e662bc2fdf9a72a",
-        path: "uploads/20tf034d18fY882e662bc2fdf9a72a",
-        size: 7830,
-      };
-      const req = {
-        body: {
-          name: "Tempest Freerunning Academy",
-          marked: 100,
-          description: "Awesome indoor facilities for all types of training.",
-          createdBy: "622f701d711b35a7cca16023",
-          markedBy: ["622f701d711b35a7cca16023", "622f701d711b35a7cca16024"],
-          location: "Los Angeles",
-          coordinates: [33.9205125116643, 118.33194890241008],
-        },
-        file: image,
-      };
-
-      const next = jest.fn();
-      const error = "Error renaming the file";
-      jest
-        .spyOn(fs, "rename")
-        .mockImplementation((oldpath, newpath, callback) => {
-          callback(error);
-        });
-
-      await createSpot(req, res, next);
-
-      expect(next).toHaveBeenCalledWith(error);
     });
   });
 
@@ -305,15 +257,8 @@ describe("Given a createSpot controller", () => {
 
       const next = jest.fn();
       const error = "Error reading the file";
-      jest
-        .spyOn(fs, "rename")
-        .mockImplementation((oldpath, newpath, callback) => {
-          callback();
-        });
 
-      jest.spyOn(fs, "readFile").mockImplementation((file, callback) => {
-        callback(error, image);
-      });
+      mockFsReadFile.mockRejectedValue(error);
 
       await createSpot(req, res, next);
 
@@ -349,18 +294,9 @@ describe("Given a createSpot controller", () => {
 
       const next = jest.fn();
       const error = new Error("Error, couldn't create the spot");
-      jest
-        .spyOn(fs, "rename")
-        .mockImplementation((oldpath, newpath, callback) => {
-          callback();
-        });
 
-      jest.spyOn(fs, "readFile").mockImplementation((file, callback) => {
-        callback(null, image);
-      });
-      jest.spyOn(fs, "unlink").mockImplementation((file, callback) => {
-        callback(error);
-      });
+      mockFsReadFile.mockResolvedValue(null);
+      jest.spyOn(fs, "unlink").mockResolvedValue(error);
       Spot.create = jest.fn().mockRejectedValue(null);
 
       await createSpot(req, res, next);
@@ -412,132 +348,12 @@ describe("Given an updateSpot controller", () => {
 
       Spot.findById = jest.fn().mockResolvedValue(newSpot);
       Spot.findByIdAndUpdate = jest.fn().mockResolvedValue(newSpot);
-      jest
-        .spyOn(fs, "rename")
-        .mockImplementation((oldpath, newpath, callback) => {
-          callback();
-        });
-      jest.spyOn(fs, "readFile").mockImplementation((file, callback) => {
-        callback(null, image);
-      });
+      jest.spyOn(fs, "rename").mockResolvedValue(undefined);
+      jest.spyOn(fs, "readFile").mockResolvedValue({});
 
       await updateSpot(req, res, next);
 
       expect(res.json).toHaveBeenCalledWith(newSpot);
-    });
-  });
-
-  describe("When it receives a request with spot data and an image and the renaming fails", () => {
-    test("Then it should call next with an error", async () => {
-      const res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
-
-      const image = {
-        fieldname: "image",
-        originalname: "spotImage.jpeg",
-        encoding: "7bit",
-        mimetype: "image/jpeg",
-        destination: "uploads/",
-        filename: "20tf034d18fY882e662bc2fdf9a72a",
-        path: "uploads/20tf034d18fY882e662bc2fdf9a72a",
-        size: 7830,
-      };
-      const req = {
-        body: {
-          name: "Tempest Freerunning Academy",
-          marked: 100,
-          description: "Awesome indoor facilities for all types of training.",
-          createdBy: "622f701d711b35a7cca16023",
-          markedBy: ["622f701d711b35a7cca16023", "622f701d711b35a7cca16024"],
-          location: "Los Angeles",
-          coordinates: [33.9205125116643, 118.33194890241008],
-        },
-        file: image,
-        params: {
-          id: "623357ec7bfc7c9d599034be",
-        },
-      };
-      const newSpot = {
-        id: 123456,
-        name: "Tempest Freerunning Academy",
-        image: "imageUrl",
-      };
-      const error = "Error renaming the file";
-      const next = jest.fn();
-
-      Spot.findById = jest.fn().mockResolvedValue(newSpot);
-      Spot.findByIdAndUpdate = jest.fn().mockResolvedValue(newSpot);
-      jest
-        .spyOn(fs, "rename")
-        .mockImplementation((oldpath, newpath, callback) => {
-          callback(error);
-        });
-      jest.spyOn(fs, "readFile").mockImplementation((file, callback) => {
-        callback(null, image);
-      });
-
-      await updateSpot(req, res, next);
-
-      expect(next).toHaveBeenCalledWith(error);
-    });
-  });
-
-  describe("When it receives a request with spot data and no image", () => {
-    test("Then it should call next with an error", async () => {
-      const res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
-
-      const image = {
-        fieldname: "image",
-        originalname: "spotImage.jpeg",
-        encoding: "7bit",
-        mimetype: "image/jpeg",
-        destination: "uploads/",
-        filename: "20tf034d18fY882e662bc2fdf9a72a",
-        path: "uploads/20tf034d18fY882e662bc2fdf9a72a",
-        size: 7830,
-      };
-      const req = {
-        body: {
-          name: "Tempest Freerunning Academy",
-          marked: 100,
-          description: "Awesome indoor facilities for all types of training.",
-          createdBy: "622f701d711b35a7cca16023",
-          markedBy: ["622f701d711b35a7cca16023", "622f701d711b35a7cca16024"],
-          location: "Los Angeles",
-          coordinates: [33.9205125116643, 118.33194890241008],
-        },
-        file: image,
-        params: {
-          id: "623357ec7bfc7c9d599034be",
-        },
-      };
-      const newSpot = {
-        id: 123456,
-        name: "Tempest Freerunning Academy",
-        image: "imageUrl",
-      };
-      const error = "Error reading the file";
-      const next = jest.fn();
-
-      Spot.findById = jest.fn().mockResolvedValue(newSpot);
-      Spot.findByIdAndUpdate = jest.fn().mockResolvedValue(newSpot);
-      jest
-        .spyOn(fs, "rename")
-        .mockImplementation((oldpath, newpath, callback) => {
-          callback();
-        });
-      jest.spyOn(fs, "readFile").mockImplementation((file, callback) => {
-        callback(error, image);
-      });
-
-      await updateSpot(req, res, next);
-
-      expect(next).toHaveBeenCalledWith(error);
     });
   });
 });
