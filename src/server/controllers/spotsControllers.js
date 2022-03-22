@@ -5,7 +5,7 @@ const {
   uploadBytes,
   getDownloadURL,
 } = require("firebase/storage");
-const fs = require("fs");
+const fs = require("fs/promises");
 const path = require("path");
 const debug = require("debug")("PK-spots:server:controllers");
 const Spot = require("../../db/models/Spot");
@@ -56,109 +56,68 @@ const deleteSpot = async (req, res, next) => {
   }
 };
 
-const createSpot = async (req, res, next) =>
-  new Promise((resolve) => {
-    try {
-      const oldFileName = path.join("uploads", req.file.filename);
-      const newFileName = path.join("uploads", req.file.originalname);
-      fs.rename(oldFileName, newFileName, (error) => {
-        if (error) {
-          next(error);
-          resolve();
-        } else {
-          fs.readFile(newFileName, async (err, file) => {
-            if (err) {
-              next(err);
-              resolve();
-            } else {
-              const spotRef = ref(storage, newFileName);
-              await uploadBytes(spotRef, file);
-              debug("Uploaded spot image to cloud storage!");
-              const firebaseFileUrl = await getDownloadURL(spotRef);
-              const createdSpot = await Spot.create({
-                ...req.body,
-                image: firebaseFileUrl,
-              });
-              const creator = await User.findById(req.userId);
-              creator.createdSpots.push(createdSpot);
-              await creator.save();
-              res.status(201).json(createdSpot);
-              resolve();
-            }
-          });
-        }
-      });
-    } catch (error) {
-      if (req.file) {
-        fs.unlink(path.join("uploads", req.file.filename), () => {
-          error.code = 404;
-          error.message = "Error, local file not found";
-          next(error);
-          resolve();
-        });
-      }
-      error.message = "Error, image not found";
-      error.code = 400;
-      next(error);
-      resolve();
-    }
-  });
-
-const updateSpot = async (req, res, next) =>
-  new Promise((resolve) => {
-    try {
-      const { id } = req.params;
-      const selectedSpot = Spot.findById(id);
-      if (selectedSpot) {
-        const oldFileName = path.join("uploads", req.file.filename);
-        const newFileName = path.join("uploads", req.file.originalname);
-        fs.rename(oldFileName, newFileName, (error) => {
-          if (error) {
-            next(error);
-            resolve();
-          } else {
-            fs.readFile(newFileName, async (err, file) => {
-              if (err) {
-                next(err);
-                resolve();
-              } else {
-                const spotRef = ref(storage, newFileName);
-                await uploadBytes(spotRef, file);
-                debug("Uploaded spot image to cloud storage!");
-                const firebaseFileUrl = await getDownloadURL(spotRef);
-
-                const updatedSpot = await Spot.findByIdAndUpdate(
-                  id,
-                  {
-                    ...req.body,
-                    image: firebaseFileUrl,
-                  },
-                  { new: true }
-                );
-                res.status(200).json(updatedSpot);
-                resolve();
-              }
-            });
-          }
-        });
-      } else {
-        const error = new Error("Spot not found");
-        error.code = 404;
-        next(error);
-      }
-    } catch (error) {
+const createSpot = async (req, res, next) => {
+  try {
+    const oldFileName = path.join("uploads", req.file.filename);
+    const newFileName = path.join("uploads", req.file.originalname);
+    await fs.rename(oldFileName, newFileName);
+    const imageBuffer = await fs.readFile(newFileName);
+    const spotRef = ref(storage, newFileName);
+    await uploadBytes(spotRef, imageBuffer);
+    debug("Uploaded spot image to cloud storage!");
+    const firebaseFileUrl = await getDownloadURL(spotRef);
+    const createdSpot = await Spot.create({
+      ...req.body,
+      image: firebaseFileUrl,
+    });
+    const creator = await User.findById(req.userId);
+    creator.createdSpots.push(createdSpot);
+    await creator.save();
+    res.status(201).json(createdSpot);
+  } catch (error) {
+    if (req.file) {
       fs.unlink(path.join("uploads", req.file.filename), () => {
         error.code = 404;
         error.message = "Error, local file not found";
         next(error);
-        resolve();
       });
-      error.message = "Error, couldn't update the spot";
-      error.code = 400;
-      next(error);
-      resolve();
     }
-  });
+    error.message = "Error, image not found";
+    error.code = 400;
+    next(error);
+  }
+};
+
+const updateSpot = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    await Spot.findById(id);
+    const oldFileName = path.join("uploads", req.file.filename);
+    const newFileName = path.join("uploads", req.file.originalname);
+    await fs.rename(oldFileName, newFileName);
+    const imageBuffer = await fs.readFile(newFileName);
+    const spotRef = ref(storage, newFileName);
+    await uploadBytes(spotRef, imageBuffer);
+    debug("Uploaded spot image to cloud storage!");
+    const firebaseFileUrl = await getDownloadURL(spotRef);
+    const updatedSpot = await Spot.findByIdAndUpdate(
+      id,
+      {
+        ...req.body,
+        image: firebaseFileUrl,
+      },
+      { new: true }
+    );
+    res.status(200).json(updatedSpot);
+  } catch (error) {
+    if (req.file) {
+      fs.unlink(path.join("uploads", req.file.filename));
+    }
+    error.message = "Error, couldn't update the spot";
+    error.code = 400;
+    next(error);
+  }
+};
 
 module.exports = {
   getSpots,
