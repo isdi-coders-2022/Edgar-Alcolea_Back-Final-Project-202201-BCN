@@ -74,17 +74,15 @@ const createSpot = async (req, res, next) => {
     creator.createdSpots.push(createdSpot);
     await creator.save();
     res.status(201).json(createdSpot);
-  } catch (error) {
-    if (req.file) {
-      fs.unlink(path.join("uploads", req.file.filename), () => {
-        error.code = 404;
-        error.message = "Error, local file not found";
-        next(error);
-      });
+  } catch (err) {
+    try {
+      await fs.unlink(path.join("uploads", req.file.filename));
+    } catch (error) {
+      next(error);
     }
-    error.message = "Error, image not found";
-    error.code = 400;
-    next(error);
+    err.message = "Error, image not found";
+    err.code = 400;
+    next(err);
   }
 };
 
@@ -109,13 +107,10 @@ const updateSpot = async (req, res, next) => {
       { new: true }
     );
     res.status(200).json(updatedSpot);
-  } catch (error) {
-    if (req.file) {
-      fs.unlink(path.join("uploads", req.file.filename));
-    }
-    error.message = "Error, couldn't update the spot";
-    error.code = 400;
-    next(error);
+  } catch (err) {
+    err.message = "Error, couldn't update the spot";
+    err.code = 400;
+    next(err);
   }
 };
 

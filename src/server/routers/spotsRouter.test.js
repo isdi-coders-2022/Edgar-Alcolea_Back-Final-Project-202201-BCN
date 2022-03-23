@@ -118,6 +118,28 @@ describe("Given a /spots/new endpoint", () => {
       expect(body).toHaveProperty("name");
     });
   });
+  describe("When it receives a request with wrong data and file", () => {
+    test("Then it should respond with status 500 and an error", async () => {
+      const token =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkxhdWxodXMiLCJpZCI6IjYyMzQ3ZDZjYjVlOGZhMDQxZjdjMWE0NiIsImltYWdlIjoiaHR0cHM6Ly9maXJlYmFzZXN0b3JhZ2UuZ29vZ2xlYXBpcy5jb20vdjAvYi9way1zcG90cy02ODg2Ni5hcHBzcG90LmNvbS9vL3VwbG9hZHMlNUNmb3RvZWQuanBnP2FsdD1tZWRpYSZ0b2tlbj04NzhjMTU2MS1jMWY3LTRmNWEtYTM1NC00OTQ3NTUzZTBkZWYiLCJhZG1pbiI6dHJ1ZSwiaWF0IjoxNjQ3ODU0MjU3fQ.QCmDUyMnZztfuhqn4OxZvpdUzlZUppZrhS6ofgVQrzM";
+
+      const error = new Error('Couldn"t create spot');
+      User.findById = jest.fn().mockRejectedValue(error);
+      await request(app)
+        .post(`/spots/new`)
+        .field("name", "Tempest Freerunning Academy")
+        .field(
+          "description",
+          "Awesome indoor facilities for all types of training."
+        )
+        .field("location", "Los Angeles")
+        .field("xCoordinate", "33.9205125116643")
+        .field("yCoordinate", "118.33194890241008")
+        .attach("image", path.resolve("uploads/Sin título.png"))
+        .set({ Authorization: token })
+        .expect(500);
+    });
+  });
 });
 
 describe("Given a /spots/:id endpoint", () => {
@@ -142,6 +164,31 @@ describe("Given a /spots/:id endpoint", () => {
         .set({ Authorization: token });
 
       expect(body).toHaveProperty("name", expectedName);
+    });
+  });
+  describe("When it receives a request with wrong data and file", () => {
+    test("Then it should respond with status 500 and an error", async () => {
+      const token =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkxhdWxodXMiLCJpZCI6IjYyMzQ3ZDZjYjVlOGZhMDQxZjdjMWE0NiIsImltYWdlIjoiaHR0cHM6Ly9maXJlYmFzZXN0b3JhZ2UuZ29vZ2xlYXBpcy5jb20vdjAvYi9way1zcG90cy02ODg2Ni5hcHBzcG90LmNvbS9vL3VwbG9hZHMlNUNmb3RvZWQuanBnP2FsdD1tZWRpYSZ0b2tlbj04NzhjMTU2MS1jMWY3LTRmNWEtYTM1NC00OTQ3NTUzZTBkZWYiLCJhZG1pbiI6dHJ1ZSwiaWF0IjoxNjQ3ODU0MjU3fQ.QCmDUyMnZztfuhqn4OxZvpdUzlZUppZrhS6ofgVQrzM";
+      const spots = await request(app).get("/spots");
+      const { id } = spots.body[0];
+      const error = new Error("Couldn't update spot");
+      Spot.findById = jest.fn().mockRejectedValue(error);
+      const { body } = await request(app)
+        .put(`/spots/${id}`)
+        .field("name", "Tempest Freerunning Academy")
+        .field(
+          "description",
+          "Awesome indoor facilities for all types of training."
+        )
+        .field("location", "Los Angeles")
+        .field("xCoordinate", "33.9205125116643")
+        .field("yCoordinate", "118.33194890241008")
+        .attach("image", path.resolve("uploads/Sin título.png"))
+        .set({ Authorization: token })
+        .expect(400);
+
+      expect(body).toHaveProperty("message", error.message);
     });
   });
 });
