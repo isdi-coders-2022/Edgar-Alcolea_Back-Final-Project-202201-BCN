@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const debug = require("debug")("PK-spots:server:controllers");
 const jwt = require("jsonwebtoken");
-const fs = require("fs");
+const fs = require("fs/promises");
 const path = require("path");
 const { ref, uploadBytes, getDownloadURL } = require("firebase/storage");
 const User = require("../../db/models/User");
@@ -28,7 +28,7 @@ const userLogin = async (req, res, next) => {
         admin: user.admin,
       };
       const token = jwt.sign(UserData, process.env.JWT_SECRET);
-      res.json({ token });
+      res.status(201).json({ token });
     }
   }
 };
@@ -41,42 +41,26 @@ const userRegister = async (req, res, next) => {
       if (req.file) {
         const oldFileName = path.join("uploads", req.file.filename);
         const newFileName = path.join("uploads", req.file.originalname);
-        fs.rename(oldFileName, newFileName, (error) => {
-          if (error) {
-            next(error);
-          } else {
-            fs.readFile(newFileName, async (err, file) => {
-              if (err) {
-                next(err);
-              } else {
-                const spotRef = ref(storage, newFileName);
-                await uploadBytes(spotRef, file);
-                debug("Uploaded user image to cloud storage!");
-                const firebaseFileUrl = await getDownloadURL(spotRef);
-                const encryptedPassword = await bcrypt.hash(password, 10);
-                const createdUser = await User.create({
-                  ...req.body,
-                  password: encryptedPassword,
-                  image: firebaseFileUrl,
-                });
-                res.status(201).json(createdUser);
-              }
-            });
-          }
+        await fs.rename(oldFileName, newFileName);
+        const imageBuffer = await fs.readFile(newFileName);
+        const spotRef = ref(storage, newFileName);
+        await uploadBytes(spotRef, imageBuffer);
+        debug("Uploaded user image to cloud storage!");
+        const firebaseFileUrl = await getDownloadURL(spotRef);
+        const encryptedPassword = await bcrypt.hash(password, 10);
+        const createdUser = await User.create({
+          ...req.body,
+          password: encryptedPassword,
+          image: firebaseFileUrl,
         });
+        res.status(201).json(createdUser);
       } else {
         const encryptedPassword = await bcrypt.hash(password, 10);
         const createdUser = await User.create({
           ...req.body,
           password: encryptedPassword,
         });
-        if (createdUser) {
-          res.json(createdUser);
-        } else {
-          const error = new Error("Invalid data format");
-          error.code = 400;
-          next(error);
-        }
+        res.json(createdUser);
       }
     } else {
       const error = new Error("This username already exists");
