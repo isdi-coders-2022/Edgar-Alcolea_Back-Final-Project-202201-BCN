@@ -89,7 +89,7 @@ const createSpot = async (req, res, next) => {
 const updateSpot = async (req, res, next) => {
   try {
     const { id } = req.params;
-    await Spot.findById(id);
+    const oldSpot = await Spot.findById(id);
     if (req.file) {
       const oldFileName = path.join("uploads", req.file.filename);
       const newFileName = path.join("uploads", req.file.originalname);
@@ -114,6 +114,7 @@ const updateSpot = async (req, res, next) => {
         id,
         {
           ...req.body,
+          image: oldSpot.image,
         },
         { new: true }
       );
