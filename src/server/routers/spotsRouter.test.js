@@ -166,6 +166,29 @@ describe("Given a /spots/:id endpoint", () => {
       expect(body).toHaveProperty("name", expectedName);
     });
   });
+
+  describe("When it receives a PUT request and a spot in the request without image", () => {
+    test("Then it should respond with 200 status code and the updated spot", async () => {
+      const token =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkxhdWxodXMiLCJpZCI6IjYyMzQ3ZDZjYjVlOGZhMDQxZjdjMWE0NiIsImltYWdlIjoiaHR0cHM6Ly9maXJlYmFzZXN0b3JhZ2UuZ29vZ2xlYXBpcy5jb20vdjAvYi9way1zcG90cy02ODg2Ni5hcHBzcG90LmNvbS9vL3VwbG9hZHMlNUNmb3RvZWQuanBnP2FsdD1tZWRpYSZ0b2tlbj04NzhjMTU2MS1jMWY3LTRmNWEtYTM1NC00OTQ3NTUzZTBkZWYiLCJhZG1pbiI6dHJ1ZSwiaWF0IjoxNjQ3ODU0MjU3fQ.QCmDUyMnZztfuhqn4OxZvpdUzlZUppZrhS6ofgVQrzM";
+      const spots = await request(app).get("/spots");
+      const { id } = spots.body[0];
+      const expectedName = "Updated Spot";
+      const { body } = await request(app)
+        .put(`/spots/${id}`)
+        .field("name", "Updated Spot")
+        .field(
+          "description",
+          "Awesome indoor facilities for all types of training."
+        )
+        .field("location", "Los Angeles")
+        .field("xCoordinate", "33.9205125116643")
+        .field("yCoordinate", "118.33194890241008")
+        .set({ Authorization: token });
+
+      expect(body).toHaveProperty("name", expectedName);
+    });
+  });
   describe("When it receives a request with wrong data and file", () => {
     test("Then it should respond with status 500 and an error", async () => {
       const token =
