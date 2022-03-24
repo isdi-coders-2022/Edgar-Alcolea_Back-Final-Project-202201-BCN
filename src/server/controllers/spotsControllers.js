@@ -90,23 +90,35 @@ const updateSpot = async (req, res, next) => {
   try {
     const { id } = req.params;
     await Spot.findById(id);
-    const oldFileName = path.join("uploads", req.file.filename);
-    const newFileName = path.join("uploads", req.file.originalname);
-    await fs.rename(oldFileName, newFileName);
-    const imageBuffer = await fs.readFile(newFileName);
-    const spotRef = ref(storage, newFileName);
-    await uploadBytes(spotRef, imageBuffer);
-    debug("Uploaded spot image to cloud storage!");
-    const firebaseFileUrl = await getDownloadURL(spotRef);
-    const updatedSpot = await Spot.findByIdAndUpdate(
-      id,
-      {
-        ...req.body,
-        image: firebaseFileUrl,
-      },
-      { new: true }
-    );
-    res.status(200).json(updatedSpot);
+    if (req.file) {
+      const oldFileName = path.join("uploads", req.file.filename);
+      const newFileName = path.join("uploads", req.file.originalname);
+      await fs.rename(oldFileName, newFileName);
+      const imageBuffer = await fs.readFile(newFileName);
+      const spotRef = ref(storage, newFileName);
+      await uploadBytes(spotRef, imageBuffer);
+      debug("Uploaded spot image to cloud storage!");
+      const firebaseFileUrl = await getDownloadURL(spotRef);
+
+      const updatedSpot = await Spot.findByIdAndUpdate(
+        id,
+        {
+          ...req.body,
+          image: firebaseFileUrl,
+        },
+        { new: true }
+      );
+      res.status(200).json(updatedSpot);
+    } else {
+      const updatedSpot = await Spot.findByIdAndUpdate(
+        id,
+        {
+          ...req.body,
+        },
+        { new: true }
+      );
+      res.status(200).json(updatedSpot);
+    }
   } catch (err) {
     err.message = "Error, couldn't update the spot";
     err.code = 400;
